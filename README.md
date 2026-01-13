@@ -1,62 +1,62 @@
 <details>
 	<summary>Click to expand</summary>
-  '''
-  delete window.$;
+'''
+	
+	delete window.$;
+	let wpRequire = webpackChunkdiscord_app.push([[Symbol()], {}, r => r]);
+	webpackChunkdiscord_app.pop();
 
-let wpRequire = webpackChunkdiscord_app.push([[Symbol()], {}, r => r]);
-webpackChunkdiscord_app.pop();
+	// --- Module caching helper ---
+	const cachedModules = {};
+	function getModule(findFn) {
+    	if (!cachedModules[findFn]) {
+       	 cachedModules[findFn] = Object.values(wpRequire.c).find(findFn)?.exports;
+    	}
+    	return cachedModules[findFn];
+	}
 
-// --- Module caching helper ---
-const cachedModules = {};
-function getModule(findFn) {
-    if (!cachedModules[findFn]) {
-        cachedModules[findFn] = Object.values(wpRequire.c).find(findFn)?.exports;
-    }
-    return cachedModules[findFn];
-}
+	// --- Stores ---
+	const QuestsStore = getModule(x => x?.Z?.__proto__?.getQuest).Z;
+	const RunningGameStore = getModule(x => x?.ZP?.getRunningGames).ZP;
+	const ApplicationStreamingStore = getModule(x => x?.Z?.__proto__?.getStreamerActiveStreamMetadata).Z;
+	const ChannelStore = getModule(x => x?.Z?.__proto__?.getAllThreadsForParent).Z;
+	const GuildChannelStore = getModule(x => x?.ZP?.getSFWDefaultChannel).ZP;
+	const FluxDispatcher = getModule(x => x?.Z?.__proto__?.flushWaitQueue).Z;
+	const api = getModule(x => x?.tn?.get).tn;
 
-// --- Stores ---
-const QuestsStore = getModule(x => x?.Z?.__proto__?.getQuest).Z;
-const RunningGameStore = getModule(x => x?.ZP?.getRunningGames).ZP;
-const ApplicationStreamingStore = getModule(x => x?.Z?.__proto__?.getStreamerActiveStreamMetadata).Z;
-const ChannelStore = getModule(x => x?.Z?.__proto__?.getAllThreadsForParent).Z;
-const GuildChannelStore = getModule(x => x?.ZP?.getSFWDefaultChannel).ZP;
-const FluxDispatcher = getModule(x => x?.Z?.__proto__?.flushWaitQueue).Z;
-const api = getModule(x => x?.tn?.get).tn;
-
-// --- Config ---
-const supportedTasks = [
+	// --- Config ---
+	const supportedTasks = [
     "WATCH_VIDEO",
     "PLAY_ON_DESKTOP",
     "STREAM_ON_DESKTOP",
     "PLAY_ACTIVITY",
     "WATCH_VIDEO_ON_MOBILE"
-];
+	];
 
-const isApp = typeof DiscordNative !== "undefined";
-
-// --- Filter active quests ---
-const quests = [...QuestsStore.quests.values()].filter(q => 
+	const isApp = typeof DiscordNative !== "undefined";
+	
+	// --- Filter active quests ---
+	const quests = [...QuestsStore.quests.values()].filter(q => 
     q.userStatus?.enrolledAt &&
     !q.userStatus?.completedAt &&
     new Date(q.config.expiresAt).getTime() > Date.now() &&
     supportedTasks.some(task => Object.keys((q.config.taskConfig ?? q.config.taskConfigV2).tasks).includes(task))
-);
+	);
 
-if (!quests.length) {
+	if (!quests.length) {
     console.log("You don't have any uncompleted quests!");
-}
+	}
 
-// --- Utility ---
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+	// --- Utility ---
+	const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-function getQuestTask(quest) {
+	function getQuestTask(quest) {
     const taskConfig = quest.config.taskConfig ?? quest.config.taskConfigV2;
     return supportedTasks.find(t => taskConfig.tasks[t] != null);
-}
+	}
 
-// --- Main handler ---
-async function handleQuest(quest) {
+	// --- Main handler ---
+	async function handleQuest(quest) {
     const taskName = getQuestTask(quest);
     const taskConfig = quest.config.taskConfig ?? quest.config.taskConfigV2;
     const secondsNeeded = taskConfig.tasks[taskName].target;
@@ -214,10 +214,10 @@ async function handleQuest(quest) {
             break;
         }
     }
-}
+	}
 
-// --- Run all quests sequentially ---
-(async () => {
+	// --- Run all quests sequentially ---
+	(async () => {
     for (const quest of quests) {
         try {
             await handleQuest(quest);
@@ -225,7 +225,7 @@ async function handleQuest(quest) {
             console.error("Error handling quest:", quest.config.messages?.questName, err);
         }
     }
-})();
+	})();
 
 '''
 </details>
